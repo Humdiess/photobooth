@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas-pro'
 
 export function captureImage(webcamRef: any): string | null {
   return webcamRef.current?.getScreenshot() ?? null
