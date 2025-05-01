@@ -1,16 +1,17 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { captureImage, delay, downloadImage } from '../lib/utils'
-import WebcamPreview from '../components/WebcamPreview'
-import EffectSelector from '../components/EffectSelector'
-import CaptureButton from '../components/CaptureButton'
-import PhotoList from '../components/PhotoList'
+import { captureImage, delay, downloadImage } from '@/lib/utils'
+import WebcamPreview from '@/components/WebcamPreview'
+import EffectSelector from '@/components/EffectSelector'
+import CaptureButton from '@/components/CaptureButton'
+import PhotoList from '@/components/PhotoList'
 import FlashOverlay from './FlashOverlay'
 
 export default function PhotoboothPage() {
   const webcamRef = useRef(null)
   const captureContainerRef = useRef<HTMLDivElement>(null)
+
   const [effect, setEffect] = useState('none')
   const [shots, setShots] = useState<string[]>([])
   const [isShooting, setIsShooting] = useState(false)
@@ -31,6 +32,12 @@ export default function PhotoboothPage() {
       await delay(3000)
     }
     setIsShooting(false)
+  }
+
+  const handleDownload = () => {
+    if (captureContainerRef.current) {
+      downloadImage(captureContainerRef as React.RefObject<HTMLElement>)
+    }
   }
 
   return (
@@ -56,7 +63,7 @@ export default function PhotoboothPage() {
 
       {shots.length === 4 && (
         <button
-          onClick={() => downloadImage(captureContainerRef)}
+          onClick={handleDownload}
           className="mt-6 bg-blue-500 px-4 py-2 rounded font-bold text-white hover:bg-blue-600"
         >
           Unduh Kolase
