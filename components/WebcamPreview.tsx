@@ -2,7 +2,7 @@ import type React from "react"
 import Webcam from "react-webcam"
 
 interface WebcamPreviewProps {
-  webcamRef: React.RefObject<Webcam>
+  webcamRef: React.RefObject<Webcam | null>
   effect: string
 }
 

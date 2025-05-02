@@ -11,9 +11,10 @@ import PhotoList from "@/components/PhotoList"
 import FlashOverlay from "@/components/FlashOverlay"
 import LayoutSelector from "@/components/LayoutSelector"
 import DecorationSelector from "@/components/DecorationSelector"
+import type Webcam from "react-webcam"
 
 export default function PhotoboothPage() {
-  const webcamRef = useRef(null)
+  const webcamRef = useRef<Webcam | null>(null)
   const captureContainerRef = useRef<HTMLDivElement>(null)
 
   const [effect, setEffect] = useState("none")
