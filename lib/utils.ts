@@ -2,10 +2,11 @@ import type React from "react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export const captureImage = (webcamRef: any, effect: string) => {
+export const captureImage = async (webcamRef: any, effect: string) => {
   if (!webcamRef.current) return null
 
   const screenshot = webcamRef.current.getScreenshot()
+  if (!screenshot) return null
 
   // If no effect or effect is 'none', return the original screenshot
   if (!effect || effect === "none") {
@@ -13,7 +14,13 @@ export const captureImage = (webcamRef: any, effect: string) => {
   }
 
   // Apply the effect to the screenshot using canvas
-  return applyEffectToImage(screenshot, effect)
+  try {
+    const processedImage = await applyEffectToImage(screenshot, effect)
+    return processedImage
+  } catch (error) {
+    console.error("Error applying filter:", error)
+    return screenshot // Return original if filter application fails
+  }
 }
 
 const applyEffectToImage = (imageDataUrl: string, effect: string): Promise<string> => {
@@ -91,11 +98,27 @@ const applySepia = (ctx: CanvasRenderingContext2D, width: number, height: number
 }
 
 const applyBlur = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-  // Simple box blur
-  ctx.filter = "blur(4px)"
+  // Get the current image data
   const imageData = ctx.getImageData(0, 0, width, height)
+
+  // Create a temporary canvas for the blur effect
+  const tempCanvas = document.createElement("canvas")
+  tempCanvas.width = width
+  tempCanvas.height = height
+  const tempCtx = tempCanvas.getContext("2d")
+
+  if (!tempCtx) return
+
+  // Draw the original image to the temp canvas
+  tempCtx.putImageData(imageData, 0, 0)
+
+  // Clear the original canvas
   ctx.clearRect(0, 0, width, height)
-  ctx.putImageData(imageData, 0, 0)
+
+  // Apply blur using filter and draw back to original
+  ctx.filter = "blur(4px)"
+  ctx.drawImage(tempCanvas, 0, 0)
+  ctx.filter = "none" // Reset filter
 }
 
 const applyVintage = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
